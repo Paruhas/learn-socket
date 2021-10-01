@@ -65,6 +65,16 @@
     <script>
       const socket = io();
 
+      const nickname = prompt("enter nickname", "");
+
+      socket.emit("send-nickname", nickname);
+
+      socket.on("user connect", function (nickname) {
+        const item = document.createElement("li");
+        item.textContent = `user connect name: ${nickname}`;
+        messages.appendChild(item);
+      });
+
       const messages = document.getElementById("messages");
       const form = document.getElementById("form");
       const input = document.getElementById("input");
@@ -72,21 +82,31 @@
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (input.value) {
-          socket.emit("chat message", input.value);
+          socket.emit("new message", {
+            msg: input.value,
+            nickname: nickname,
+          });
           input.value = "";
         }
+      });
+
+      socket.on("chat message", function (data) {
+        // console.log(data);
+        const item = document.createElement("li");
+        item.textContent = `${data.nickname}: ${data.msg}`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      socket.on("user disconnect", function (disUser) {
+        const item = document.createElement("li");
+        item.textContent = `${disUser} has disconnected`;
+        messages.appendChild(item);
       });
 
       // input.addEventListener("input", function (e) {
       //   console.log(input.value);
       // });
-
-      socket.on("chat message", function (msg) {
-        const item = document.createElement("li");
-        item.textContent = msg;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
     </script>
   </body>
 </html>
