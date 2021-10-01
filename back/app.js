@@ -2,12 +2,13 @@ const express = require("express");
 const app = express();
 
 const http = require("http");
+const { dirname } = require("path");
 const sever = http.createServer(app);
 
 const PORT = 2000;
 
 app.get("/", (req, res, next) => {
-  res.send("<h1>Hello World</h1>");
+  res.sendFile(__dirname + "/app.html");
 });
 
 app.listen(PORT, () => {
