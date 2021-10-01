@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 
 const http = require("http");
-const { dirname } = require("path");
-const sever = http.createServer(app);
+const server = http.createServer(app);
+
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 const PORT = 2000;
 
@@ -11,6 +13,12 @@ app.get("/", (req, res, next) => {
   res.sendFile(__dirname + "/app.html");
 });
 
-app.listen(PORT, () => {
+io.on("connection", (socket) => {
+  socket.on("chat message", (msg) => {
+    io.emit("chat message", msg);
+  });
+});
+
+server.listen(PORT, () => {
   console.log(`Sever start on port: ${PORT}`);
 });
